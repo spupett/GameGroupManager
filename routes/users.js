@@ -2,26 +2,21 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authenticated');
 const dispayUser = require('../schemas/DisplayUser');
+require('dotenv/config');
 
-const connectionString = 'mongodb+srv://spuppett:DMbPnhZAbyGBy0mJ@cluster0.fm2oq.mongodb.net/gamedaymanagerdb?retryWrites=true&w=majority'
 const mongoose = require('mongoose');
 
 const User = require('../schemas/User');
 
-mongoose.connect(connectionString, { useNewUrlParser: true });
-const db = mongoose.connection;
-// db.once('open', _ => {
-//     console.log('DB Connected (user):', connectionString);
-// })
-
+mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true });
 
 // This is used to make other sub-routes
 //var someotherfolder = require('/someother/folder')
 
 router
     // Add a binding to handel /Users
-    .get('/', (req, res, next) => {
-        const bggName = req.body.BGGName;
+    .get('/:bggUser', (req, res, next) => {
+        const bggName = req.params.bggUser;
 
         const user = findUser({ BGGName: new RegExp('\\b' + bggName + '\\b', 'i') }) // using regex to preform case insesitive search on bggName
         .then(doc => {

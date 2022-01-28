@@ -7,7 +7,7 @@ const app = express();
 
 app.use(express.json()); //Make sure to send data as Content-Type: application/json to read it in req.body
 app.use(session({
-    secret: 'work hard',  // should be stored in a seceret at some point
+    secret: process.env.SESSION_SECERET,
     resave: true,
     saveUninitialized: false,
     cookie: { secure: !true }
@@ -15,11 +15,13 @@ app.use(session({
 // needs to be last middleware called
 app.use('/users', userRoutes);
 
-app.listen(3000, () => {
-    console.log("Listening on 3000");
-});
+// allow dynamic port by host
+const port = process.env.PORT || 3000;
 
-// middleware routs
 app.get('/', auth.isAuthenticated, (req, res, next) => {
     res.send('Game Day Manager!!!!!');
+});
+
+app.listen(port, () => {
+    console.log(`Listening on ${port}`);
 });
