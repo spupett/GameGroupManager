@@ -26,7 +26,7 @@ userSchema.statics.authenticate = function(BGGName, password, callback) {
     User.findOne({BGGName: BGGName})
         .exec(function (err, user) {
             if (err) {
-            return callback(err)
+                return callback(err)
             } else if (!user) {
                 var err = new Error('User not found.');
                 err.status = 401;
@@ -55,4 +55,4 @@ userSchema.pre('save', function(next) { // Cannot use arrow function here, messe
 });
 
 var User = mongoose.model('User', userSchema);
-module.exports =User;
+module.exports = User;

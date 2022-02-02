@@ -1,12 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const auth = require('../middleware/authenticated');
-const dispayUser = require('../schemas/DisplayUser');
+const auth = require('../../middleware/authenticated');
+const dispayUser = require('../../schemas/DisplayUser');
 require('dotenv/config');
 
 const mongoose = require('mongoose');
 
-const User = require('../schemas/User');
+const User = require('../../schemas/user');
 
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true });
 
@@ -18,7 +18,7 @@ router
     .get('/:bggUser', (req, res, next) => {
         const bggName = req.params.bggUser;
 
-        const user = findUser({ BGGName: new RegExp('\\b' + bggName + '\\b', 'i') }) // using regex to preform case insesitive search on bggName
+        const user = findUser(bggName) // using regex to preform case insesitive search on bggName
         .then(doc => {
             if(doc === null) {
                 res.statusCode = 404;
@@ -44,18 +44,6 @@ router
             })
         }
     })
-    .post('/login', (req, res, next) => {
-        User.authenticate(req.body.BGGName, req.body.password, function(error, user) {
-            if(error || !user) {
-                const err = new Error('Wrong bgg name or password.');
-                err.status = 401;
-                return next(err);
-            } else {
-                req.session.userId = user._id.toString();
-                res.redirect('/');
-            }
-        })
-    })
     .post('/', (req, res, next) => {
         if(req.body.BGGName && req.body.password) { // make sure required fields are there
             saveUser({
@@ -67,8 +55,9 @@ router
             })
             .then(doc => 
                 {
+                    addUsersGames(doc);
                     req.session.userId = doc.id;
-                    res.redirect('/');
+                    res.send(doc);
                 })
             .catch(error => {
                 console.error(error);
@@ -87,8 +76,22 @@ router
             res.send('Something\'s wrong');
         }
     })
-    .put('/update', auth.isAuthenticated, (req, res, next) => {
+    .post('/login', (req, res, next) => {
+        User.authenticate(req.body.BGGName, req.body.password, function(error, user) {
+            if(error || !user) {
+                const err = new Error('Wrong bgg name or password.');
+                err.status = 401;
+                return next(err);
+            } else {
+                req.session.userId = user._id.toString();
+
+                res.send(dispayUser.map(user));
+            }
+        })
+    })
+    .put('/', auth.isAuthenticated, (req, res, next) => {
         console.log(req.session);
+        addUsersGames(req.body.BGGName);
         res.send('Done');
     })
 
@@ -103,9 +106,15 @@ async function saveUser(user) {
     return dispayUser.map(doc);
 }
 
-async function findUser(query) {
-    const user = await User.findOne(query);
+async function findUser(bggName) {
+    const user = await User.findOne({ BGGName: new RegExp('\\b' + bggName + '\\b', 'i') });
+    if(user === null) { return null; }
     return dispayUser.map(user);
+}
+
+async function addUsersGames(user) {
+    console.log('Getting Games');
+
 }
 
 module.exports = router;

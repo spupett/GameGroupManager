@@ -4,7 +4,7 @@ const authenticated = {
         if(req.session.userId) {
             return next();
         }
-        res.session('You can\'t be here');
+        res.send('You can\'t be here');
     }
 }
 

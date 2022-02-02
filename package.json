@@ -1,19 +1,24 @@
 {
   "dependencies": {
+    "axios": "^0.25.0",
     "bcrypt": "^5.0.1",
     "connect-mongo": "^4.6.0",
     "dotenv": "^14.3.2",
     "express": "^4.17.2",
     "express-session": "^1.17.2",
     "mongodb": "^4.2.2",
-    "mongoose": "^6.1.8"
+    "mongoose": "^6.1.8",
+    "morgan": "^1.10.0",
+    "rest": "^2.0.0",
+    "xml-js": "^1.6.11",
+    "xml2json": "^0.12.0"
   },
   "name": "gamegroupmanager",
   "version": "1.0.0",
   "description": "API for managing gaming groups",
   "main": "index.js",
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.15"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
