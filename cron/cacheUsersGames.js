@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const gameUtil = require('../util-modules/game');
+const gameUtil = require('../services/game');
 const gameController = require('../api/controllers/gameController');
 
 require('dotenv/config');
