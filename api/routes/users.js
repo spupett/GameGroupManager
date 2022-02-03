@@ -79,6 +79,12 @@ router
             res.send('Something\'s wrong');
         }
     })
+    .post('/addFriend/:bggUser', auth.isAuthenticated, async (req, res, next) => {
+        const user = await dal.findOne(User, {_id: req.session.userId});
+        user.favorites.users.push(bggUser);
+        await saveUser(user);
+        res.status(200).send(user);
+    })
     .post('/login', (req, res, next) => {
         User.authenticate(req.body.BGGName, req.body.password, async function(error, user) {
             if(error || !user) {
@@ -89,7 +95,6 @@ router
                 req.session.userId = user._id.toString();
                 user.games = await addUsersGames(user);
                 res.send(dispayUser.map(user));
-                saveUser(user);
                 return user;
             }            
         })
@@ -119,9 +124,11 @@ async function findUser(bggName) {
 
 async function addUsersGames(user) {
     bggUser = await bggController.getUserGames(user.BGGName);
-    return bggUser.items.item.map(i => {
+    const b= bggUser.items.item.map(i => {
         return i._attributes.objectid;
     });
+
+    bggUser.games.contat(b);
 }
 
 module.exports = router;

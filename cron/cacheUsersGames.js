@@ -7,19 +7,19 @@ require('dotenv/config');
 const mongoose = require('mongoose');
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true });
 
-// * * * * * *  <- defaults to once a minute.
-// | | | | | |
-// | | | | | day of week
-// | | | | month
-// | | | day of month
-// | | hour
-// | minute
-// second ( optional )
+// * * * * *  <- defaults to once a minute.
+// | | | | |
+// | | | | day of week
+// | | | month
+// | | day of month
+// | hour
+// minute
+
 
 const jobs = {
     cacheGames: () => {
-        cron.schedule('*/5 * * * *', async () => { //* * 1,15 * *
-            console.log('Getting Users Games');
+        cron.schedule('*/45 * * * *', async () => { //* * 1,15 * *
+            console.log('Getting Users Games', new Date(Date.now()));
             
             try {
                 const gameList = await gameUtil.getNewGamesToAdd();
