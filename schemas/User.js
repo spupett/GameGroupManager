@@ -19,7 +19,8 @@ const userSchema = new Schema({
     password: {
         type: String,
         required: true
-    }
+    },
+    games: []
 });
 
 userSchema.statics.authenticate = function(BGGName, password, callback) {

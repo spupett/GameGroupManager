@@ -6,7 +6,10 @@ require('dotenv/config');
 
 const mongoose = require('mongoose');
 
-const User = require('../../schemas/user');
+const User = require('../../schemas/User');
+const userController = require('../controllers/userController');
+const gameController = require('../controllers/gameController');
+const bggController = require('../controllers/bggController')
 
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true });
 
@@ -77,21 +80,23 @@ router
         }
     })
     .post('/login', (req, res, next) => {
-        User.authenticate(req.body.BGGName, req.body.password, function(error, user) {
+        User.authenticate(req.body.BGGName, req.body.password, async function(error, user) {
             if(error || !user) {
                 const err = new Error('Wrong bgg name or password.');
                 err.status = 401;
                 return next(err);
             } else {
                 req.session.userId = user._id.toString();
-
+                user.games = await addUsersGames(user);
                 res.send(dispayUser.map(user));
-            }
+                saveUser(user);
+                return user;
+            }            
         })
     })
     .put('/', auth.isAuthenticated, (req, res, next) => {
         console.log(req.session);
-        addUsersGames(req.body.BGGName);
+        addUsersGames(req.body);
         res.send('Done');
     })
 
@@ -113,8 +118,10 @@ async function findUser(bggName) {
 }
 
 async function addUsersGames(user) {
-    console.log('Getting Games');
-
+    bggUser = await bggController.getUserGames(user.BGGName);
+    return bggUser.items.item.map(i => {
+        return i._attributes.objectid;
+    });
 }
 
 module.exports = router;

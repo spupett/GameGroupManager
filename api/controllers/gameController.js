@@ -1,4 +1,4 @@
-const Game = require('../models/game');
+const Game = require('../../schemas/Game');
 const Convert = require('../../util-modules').Convert;
 const Mask = require('../../util-modules').Mask;
 const bggController = require('../controllers/bggController');
@@ -6,19 +6,18 @@ const DAL = require('../DAL/dal');
 
 const getAllGames = async(gameIds) => {
     let allGames = [];
-    const gamesFromDB = [] //await getGamesFromDB(gameIds);
+    const gamesFromDB = await getGamesFromDB(gameIds);
     const dbIds = gamesFromDB.map((game) => {
         return game.bggId;
     });
     const newGameIds = gameIds.filter((id) => {
-        return dbIds.indexOf(id.toString()) === -1;
+        return dbIds.indexOf(id) === -1;
     });
     if (newGameIds.length > 0) {
         const gamesFromWS = await getGamesFromWS(newGameIds);
         if (gamesFromWS.items.item) {
             newGames = Convert.convertGameDetail(gamesFromWS);
             allGames = gamesFromDB.concat(newGames);
-            //saveNewGames(newGames);
         } else {
             return null;
         }
@@ -63,6 +62,10 @@ const controller = {
     getGames: async(gameIds) => {
         if (!Array.isArray(gameIds)) { return getAllGames([gameIds]) }
         return getAllGames(gameIds);
+    },
+
+    saveGames: async(games) => {
+        saveNewGames(games);
     }
 };
 

@@ -9,6 +9,7 @@
     "mongodb": "^4.2.2",
     "mongoose": "^6.1.8",
     "morgan": "^1.10.0",
+    "node-cron": "^3.0.0",
     "rest": "^2.0.0",
     "xml-js": "^1.6.11",
     "xml2json": "^0.12.0"
@@ -22,7 +23,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "dev:cron": "nodemon cron/cacheUsersGames.js"
   },
   "author": "",
   "license": "ISC"

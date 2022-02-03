@@ -1,8 +1,12 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-const gameSchema = mongoose.Schema({
+const gameSchema = Schema({
     name: String,
-    bggId: String,
+    bggId: {
+        type: String,
+        unique: true,
+    },
     thumbnail: String,
     image: String,
     playerCount: {
