@@ -6,7 +6,7 @@ const mongoConnection = process.env.DB_CONNECTION;
 module.exports = {
     findOne: (model, userName) => {
         mongoose.connect(mongoConnection, { useNewUrlParser: true });
-        return model.findOne({ bggName: userName }).exec()
+        return model.findOne({ BGGName: userName }).exec()
             .then((result) => { return result; })
             .catch((error) => { throw error; });
 

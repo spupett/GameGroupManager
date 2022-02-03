@@ -1,12 +1,14 @@
 const gameController = require('../api/controllers/gameController');
-const dal = require('../api/DAL/dal');
-const User = require('../schemas/User');
-const Game = require('../schemas/Game');
+const dal = require('../dal/dal');
+const User = require('../dal/schemas/User');
+const Game = require('../dal/schemas/Game');
 
-const NewGames = {
-    getUsersGames: getAllUsersGames,
+const GameUtils = {
+    getAllUniqueSavedGameIds: getAllUsersGames,
 
-    getNewGamesToAdd: getGamesToAdd
+    getNewGamesToAdd: getGamesToAdd,
+
+    getUsersOwnedGames: getUsersBGGGames
 }
 
 
@@ -26,6 +28,7 @@ async function getAllUsersGames() {
 
 async function getGamesToAdd(bggUser) {
     console.log('getting new games to add');
+
     const usersGames = !bggUser ? await getAllUsersGames() : (await dal.findOne(User, bggUser)).map(user => user.games);
     const savedGames = (await dal.find(Game, {})).map( game => { return game.bggId; });
     
@@ -35,4 +38,8 @@ async function getGamesToAdd(bggUser) {
     return newGames;
 }
 
-module.exports = NewGames;
+async function getUsersBGGGames(bggUser) {
+    console.log()
+}
+
+module.exports = GameUtils;

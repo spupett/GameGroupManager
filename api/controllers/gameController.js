@@ -1,8 +1,8 @@
-const Game = require('../../schemas/Game');
-const Convert = require('../../util-modules').Convert;
-const Mask = require('../../util-modules').Mask;
-const bggController = require('../controllers/bggController');
-const DAL = require('../DAL/dal');
+const Game = require('../../dal/schemas/Game');
+const Convert = require('../../services').Convert;
+const Mask = require('../../services').Mask;
+const bggController = require('../../bal/bggController');
+const DAL = require('../../dal/dal');
 
 const getAllGames = async(gameIds) => {
     let allGames = [];

@@ -1,4 +1,5 @@
-const User = require('../../schemas/User');
+const User = require('../../dal/schemas/User');
+const GameUtil = require('../../services/game');
 
 const controller = {
     getUsers: (dbFetch) => {
@@ -27,40 +28,25 @@ const controller = {
         .catch((error) => { throw error; })
     },
 
-    signup: (userData, dbFetch, dbAdd, hashingFunction) => {
+    signup: async (userData) => {
       console.log(userData)
-      if (!(userData.hasOwnProperty('userName')) || userData.userName === ''){
+      if (userData.BGGName === ''){
         const error = new Error('No user name given')
         error.status = 400
         throw error
       }
-      if (!userData.hasOwnProperty('password') || !userData.password === '') {
+      if (userData.password === '') {
         const error = new Error('No Password given')
         error.status = 400
         throw error
       }
-      if (!userData.hasOwnProperty('email') || !userData.email === '') {
+      if (userData.email === '') {
         const error = new Error('No Email given')
         error.status = 400
         throw error
       }
-      return controller.getUser(userData.userName, dbFetch)
-        .then((results) => {
-          if (results === null) {
-            const user = new User({
-              bggName: userData.bggName,
-              firstName: userData.firstName,
-              lastName: userData.lastName,
-              email: userData.email,
-              userName: userData.userName,
-              hash: hashingFunction(userData.password)
-            });
-            return dbAdd(user)
-          }
-          if (results.found === 'database') {
-            return results;
-          }
-      });
+      const gameList = await GameUtil.getNewGamesToAdd(userData.BGGName);
+      console.log(gameList);
     },
 
     getUserGames: (userName, wsFetch) => {
