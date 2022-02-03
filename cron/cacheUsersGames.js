@@ -16,18 +16,22 @@ mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true });
 // | minute
 // second ( optional )
 
+const jobs = {
+    cacheGames: () => {
+        cron.schedule('*/5 * * * *', async () => { //* * 1,15 * *
+            console.log('Getting Users Games');
+            
+            try {
+                const gameList = await gameUtil.getNewGamesToAdd();
+                const gameDetails = await gameController.getGames(gameList);
+                gameController.saveGames(gameDetails);
+            }
+            catch(error) {
+                console.log(error);
+            }
+            
+        })
+    }
+}
 
-cron.schedule('*/5 * * * *', async () => { //* * 1,15 * *
-    console.log('Running a task');
-    
-    try {
-        const gameList = await gameUtil.getNewGamesToAdd();
-        const gameDetails = await gameController.getGames(gameList);
-        console.log(gameDetails);
-        gameController.saveGames(gameDetails);
-    }
-    catch(error) {
-        console.log(error);
-    }
-    
-})
+module.exports = jobs;

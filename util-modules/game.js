@@ -10,8 +10,6 @@ const NewGames = {
 }
 
 
-
-
 async function getAllUsersGames() {
     console.log('getting all users games');
     var list = await dal.find(User, { games: { $exists: true, $type: 'array', $ne: [] }});

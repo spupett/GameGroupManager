@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const logger = require('morgan');
 const session = require('express-session');
+const cron = require('./cron/cacheUsersGames');
 
 const userRoutes = require('./api/routes/users');
 const gameRoutes = require('./api/routes/games');
@@ -55,6 +56,9 @@ app.use((error, req, res, next) => {
         error: { message: error.message }
     });
 });
+
+// start the cron service to cache users games in the background
+cron.cacheGames();
 
 app.listen(port, () => {
     console.log(`Listening on ${port}`)
