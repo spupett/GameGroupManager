@@ -1,12 +1,13 @@
 const axios = require('axios');
-const convert = require('xml-js');
+const jsConvert = require('xml-js');
 
 function getDataFromBGG(url) {
   return axios.get(url).then((response) => {
-    return JSON.parse(convert.xml2json(response.data, { compact: true, spaces: 4 }));
+    return JSON.parse(jsConvert.xml2json(response.data, { compact: true, spaces: 4 }));
   });
 }
 
+// These all return promises
 module.exports = {
   getUser: (userName) => {
     const URL = `https://www.boardgamegeek.com/xmlapi2/user?name=${userName}`;

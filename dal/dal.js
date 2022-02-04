@@ -19,6 +19,13 @@ module.exports = {
             .catch((error) => { throw error; });
     },
 
+    findById: (model, id) => {
+        mongoose.connect(mongoConnection, { useNewUrlParser: true});
+        return model.findById(id).exec()
+            .then((result) => { return result; })
+            .catch((error) => { throw error; });
+    },
+
     save: (model) => {
         mongoose.connect(mongoConnection, { useNewUrlParser: true });
         return model.save()
@@ -28,14 +35,14 @@ module.exports = {
 
     update: (model, where, update) => {
         mongoose.connect(mongoConnection, { useNewUrlParser: true });
-        return model.update(where, { $set: update })
+        return model.findByIdAndUpdate(where, update )
             .then((result) => { return result; })
             .catch((error) => { throw error; });
     },
 
     delete: (model, userName) => {
         mongoose.connect(mongoConnection, { useNewUrlParser: true });
-        return model.remove({ bggName: userName }).exec()
+        return model.deleteOne({ BGGName: userName }).exec()
             .then((results) => { return results; })
             .catch((error) => { throw error; });
     }
