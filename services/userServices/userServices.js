@@ -42,5 +42,9 @@ module.exports = {
     },
     updateUser: async (userData, sessionId) => {
         await dal.update(User, sessionId, userData);
+    },
+    findUser: async (bggUser) => {
+        const user = await dal.findOne(User, bggUser);
+        return user;
     }
 }

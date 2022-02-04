@@ -21,7 +21,6 @@ const DisplayUser = {
         this.model.BGGName = userData.BGGName;
         this.model.email = userData.email;
         this.model.favorites = userData.favorites;
-        this.model.id = userData._id;
         this.model.games = userData.games;
 
         return this.model
