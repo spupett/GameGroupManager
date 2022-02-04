@@ -1,10 +1,10 @@
-const cron = require('node-cron');
-const gameUtil = require('../services/game');
-const gameController = require('../api/controllers/gameController');
+const cron = require("node-cron");
+const gameUtil = require("../services/game");
+const gameController = require("../api/controllers/gameController");
 
-require('dotenv/config');
+require("dotenv/config");
 
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true });
 
 // * * * * *  <- defaults to once a minute.
@@ -15,23 +15,21 @@ mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true });
 // | hour
 // minute
 
-
 const jobs = {
-    cacheGames: () => {
-        cron.schedule('*/45 * * * *', async () => { //* * 1,15 * *
-            console.log('Getting Users Games', new Date(Date.now()));
-            
-            try {
-                const gameList = await gameUtil.getNewGamesToAdd();
-                const gameDetails = await gameController.getGames(gameList);
-                gameController.saveGames(gameDetails);
-            }
-            catch(error) {
-                console.log(error);
-            }
-            
-        })
-    }
-}
+  cacheGames: () => {
+    cron.schedule("15 */3 * * *", async () => {
+      //* * 1,15 * *
+      console.log("Getting Users Games", new Date(Date.now()));
+
+      try {
+        const gameList = await gameUtil.getNewGamesToAdd();
+        const gameDetails = await gameController.getGames(gameList);
+        gameController.saveGames(gameDetails);
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  },
+};
 
 module.exports = jobs;
