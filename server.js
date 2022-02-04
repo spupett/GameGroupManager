@@ -6,6 +6,7 @@ const cron = require('./cron/cacheUsersGames');
 
 const userRoutes = require('./api/routes/users');
 const gameRoutes = require('./api/routes/games');
+const groupRoutes = require('./api/routes/groups');
 
 // allow dynamic port by host
 const port = process.env.PORT || 3000;
@@ -41,6 +42,8 @@ app.use((req, res, next) => {
 app.use('/api/v1/users', userRoutes);
 // middleware - filter all requests for games to the gameRoutes
 app.use('/api/v1/games', gameRoutes);
+// middleware - filter all requests for groups to the groupRoutes
+app.use('/api/v1/groups', groupRoutes);
 
 // middleware - catch any requests that aren't caught by previous filters
 app.use((req, res, next) => {

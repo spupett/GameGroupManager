@@ -1,22 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authenticated');
-const dispayUser = require('../../dal/schemas/DisplayUser');
+const displayUser = require('../../dal/schemas/DisplayUser');
 const UserGameServices = require('../../services/userServices/getUserGameInfoFromBGG');
 const UserService = require('../../services/userServices/getUserInfoFromBgg');
 const UserServices = require('../../services/userServices/userServices');
 
-require('dotenv/config');
-
-const mongoose = require('mongoose');
-
 const User = require('../../dal/schemas/User');
 const userServices = require('../../services/userServices/userServices');
 
-mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true });
 
 router
-    .get('/:BGGName', async (req, res, next) => {
+    .get('/bggUser/:BGGName', async (req, res, next) => {
         const user = await UserService.getUserFromBgg(req.params.BGGName);
         res.status(200).send(user);
     })
@@ -30,7 +25,7 @@ router
                 if(err) {
                     return next(err);
                 } else {
-                    return res.redirect('/');
+                    return res.status(200).send('Logged out');
                 }
             })
         }
@@ -39,7 +34,7 @@ router
         try {
             const user = await UserServices.createUser(req.body);
             req.session.userId = user._id.toString();
-            res.status(200).send(user);
+            res.status(200).send(displayUser.map(user));
         }
         catch(err) {
             console.log(err);
@@ -54,13 +49,22 @@ router
                 return next(err);
             } else {
                 req.session.userId = user._id.toString();
-                res.status(200).send(user);
+                res.status(200).send(displayUser.map(user));
             }            
         })
     })
-    .put('/', auth.isAuthenticated, (req, res, next) => {
-        userServices.updateUser(req.body, req.session.userId);
-        res.send('Done');
+    // Need to add another route to handle password special
+    .put('/', auth.isAuthenticated, async (req, res, next) => {
+        //TODO: makesure all these are present, make sure favorites is structured correctly
+        const updateModel = {
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            email: req.body.email,
+            favorites: req.body.favorites,
+        }
+        await userServices.updateUser(updateModel, req.session.userId);
+        const user = await userServices.findUser(req.body.BGGName);
+        res.send(displayUser.map(user));
     })
     .delete('/:BGGName', auth.isAuthenticated, async (req, res, next) => {
         try {
