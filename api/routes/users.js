@@ -31,7 +31,6 @@ router
       });
     }
   })
-  //TODO: Need to add a refresh route
   .post('/', async (req, res, next) => {
     try {
       const user = await UserServices.createUser(req.body);
@@ -58,6 +57,19 @@ router
       }
     );
   })
+  .put(
+    '/refreshGames/:BGGName',
+    auth.isAuthenticated,
+    async (req, res, next) => {
+      console.log('refreshing users games list');
+      const preRefresh = await UserServices.findUser(req.params.BGGName);
+      const postRefresh = await UserServices.refreshGameList(
+        preRefresh,
+        req.session.userId
+      );
+      res.send(postRefresh);
+    }
+  )
   //TODO: Need to add another route to handle password special
   .put('/', auth.isAuthenticated, async (req, res, next) => {
     //TODO: make sure all these are present, make sure favorites is structured correctly
@@ -71,28 +83,21 @@ router
     const user = await userServices.findUser(req.body.BGGName);
     res.send(displayUser.map(user));
   })
-  .delete(
-    '/:BGGName',
-    auth.isAuthenticated,
-    async (req, res, next) => {
-      try {
-        await userServices.deleteUser(
-          req.params.BGGName,
-          req.session.userId
-        );
-        if (req.session) {
-          req.session.destroy((err) => {
-            if (err) {
-              return next(err);
-            } else {
-              res.send('User deleted');
-            }
-          });
-        }
-      } catch (error) {
-        res.status(400).send(error.message);
+  .delete('/:BGGName', auth.isAuthenticated, async (req, res, next) => {
+    try {
+      await userServices.deleteUser(req.params.BGGName, req.session.userId);
+      if (req.session) {
+        req.session.destroy((err) => {
+          if (err) {
+            return next(err);
+          } else {
+            res.send('User deleted');
+          }
+        });
       }
+    } catch (error) {
+      res.status(400).send(error.message);
     }
-  );
+  });
 
 module.exports = router;

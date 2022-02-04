@@ -2,6 +2,7 @@ const User = require('../../dal/schemas/User');
 const dal = require('../../dal/dal');
 const UserService = require('../../services/userServices/getUserInfoFromBgg');
 const UserGameServices = require('../../services/userServices/getUserGameInfoFromBGG');
+const session = require('express-session');
 
 module.exports = {
   createUser: async (UserData) => {
@@ -12,9 +13,7 @@ module.exports = {
         throw new Error('User already Exists');
       }
 
-      const bggUser = await UserService.getUserFromBgg(
-        UserData.BGGName
-      );
+      const bggUser = await UserService.getUserFromBgg(UserData.BGGName);
       if (bggUser._id === '') {
         throw new Error("BGG User Doesn't Exist");
       }
@@ -48,7 +47,7 @@ module.exports = {
     await dal.update(User, sessionId, userData);
   },
   findUser: async (bggUser) => {
-    const user = await dal.findOne(User, bggUser);
+    const user = await dal.findOne(User, bggUser.toLowerCase());
     return user;
   },
   getUsersGames: async (users) => {
@@ -66,5 +65,17 @@ module.exports = {
     });
 
     return userGames;
+  },
+  refreshGameList: async (user, sessionId) => {
+    // get games from bgg x
+    // update user.games x
+    // update
+    // fire off get games from bgg
+    const usersGames = await UserGameServices.getGameIdsFromBgg(
+      user.BGGName.toLowerCase()
+    );
+    user.games = usersGames;
+    module.exports.updateUser(user, sessionId);
+    return user;
   },
 };
