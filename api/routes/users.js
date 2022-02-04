@@ -2,26 +2,27 @@ const express = require('express');
 const router = express.Router();
 const auth = require('../middleware/authenticated');
 const dispayUser = require('../../dal/schemas/DisplayUser');
-const dal = require('../../dal/dal');
+const UserGameServices = require('../../services/userServices/getUserGameInfoFromBGG');
+const UserService = require('../../services/userServices/getUserInfoFromBgg');
+const UserServices = require('../../services/userServices/userServices');
+
 require('dotenv/config');
 
 const mongoose = require('mongoose');
 
 const User = require('../../dal/schemas/User');
-const userController = require('../controllers/userController');
-const gameController = require('../controllers/gameController');
-const bggController = require('../../bal/bggController')
+const userServices = require('../../services/userServices/userServices');
 
 mongoose.connect(process.env.DB_CONNECTION, { useNewUrlParser: true });
 
 router
-    // Add a binding to handel /Users
-    .get('/:bggUser', (req, res, next) => {
-        
-        res.status(200).send('Get User')
+    .get('/:BGGName', async (req, res, next) => {
+        const user = await UserService.getUserFromBgg(req.params.BGGName);
+        res.status(200).send(user);
     })
-    .get('/:bggUser/games', (req, res, next) => {
-        res.status(200).send('Get User Games')
+    .get('/:BGGName/games', async (req, res, next) => {
+        const usersGames = await UserGameServices.getGameIdsFromBgg(req.params.BGGName.toLowerCase());
+        res.status(200).send(usersGames)
     } )
     .get('/logout', (req, res, next) => {
         if(req.session) {
@@ -35,7 +36,15 @@ router
         }
     })
     .post('/', async (req, res, next) => {
-        
+        try {
+            const user = await UserServices.createUser(req.body);
+            req.session.userId = user._id.toString();
+            res.status(200).send(user);
+        }
+        catch(err) {
+            console.log(err);
+            res.status(400).send(err.message);
+        }
     })
     .post('/login', (req, res, next) => {
         User.authenticate(req.body.BGGName, req.body.password, async function(error, user) {
@@ -45,16 +54,30 @@ router
                 return next(err);
             } else {
                 req.session.userId = user._id.toString();
-                user.games = await getUsersGames(user);
-                res.send(dispayUser.map(user));
-                return user;
+                res.status(200).send(user);
             }            
         })
     })
     .put('/', auth.isAuthenticated, (req, res, next) => {
-        console.log(req.session);
-        getUsersGames(req.body);
+        userServices.updateUser(req.body, req.session.userId);
         res.send('Done');
+    })
+    .delete('/:BGGName', auth.isAuthenticated, async (req, res, next) => {
+        try {
+            await userServices.deleteUser(req.params.BGGName, req.session.userId);
+            if(req.session) {
+                req.session.destroy(err => {
+                    if(err) {
+                        return next(err);
+                    } else {
+                        res.send('User deleted');
+                    }
+                })
+            }
+        } catch(error) {
+            res.status(400).send(error.message);
+        }
+        
     });
 
 module.exports = router;

@@ -79,6 +79,7 @@ module.exports = {
 
             return convertedGame;
         }
+
         if (!Array.isArray(bggGameData.items.item)) {
             return [convert(bggGameData.items.item)];
         } else {

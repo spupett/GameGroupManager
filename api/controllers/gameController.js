@@ -1,7 +1,7 @@
 const Game = require('../../dal/schemas/Game');
 const Convert = require('../../services').Convert;
 const Mask = require('../../services').Mask;
-const bggController = require('../../bal/bggController');
+const bggController = require('../../bal/bggInterface');
 const DAL = require('../../dal/dal');
 
 const getAllGames = async(gameIds) => {
