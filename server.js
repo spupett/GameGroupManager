@@ -13,13 +13,14 @@ const port = process.env.PORT || 3000;
 
 // middleware - log out incoming requests
 app.use(logger('dev'));
-app.use(session({
+app.use(
+  session({
     secret: process.env.SESSION_SECERET,
     resave: true,
     saveUninitialized: false,
-    cookie: {secure: !true }
-}))
-
+    cookie: { secure: !true },
+  })
+);
 
 // middleware - takes info passed in through the body
 app.use(express.urlencoded({ extended: false }));
@@ -27,15 +28,21 @@ app.use(express.json());
 
 // middleware - adds headers to allow CORS.
 app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-    if (req.method === 'OPTIONS') {
-        // If a request for options, send back 200 with headers, but don't move onto the next middleware.
-        res.header('Access-Control-Allow-Methods', 'PUT, POST, DELETE, GET');
-        res.send(200);
-    } else {
-        next();
-    }
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  if (req.method === 'OPTIONS') {
+    // If a request for options, send back 200 with headers, but don't move onto the next middleware.
+    res.header(
+      'Access-Control-Allow-Methods',
+      'PUT, POST, DELETE, GET'
+    );
+    res.send(200);
+  } else {
+    next();
+  }
 });
 
 // middleware - filter all requests for users to the userRoutes
@@ -47,22 +54,22 @@ app.use('/api/v1/groups', groupRoutes);
 
 // middleware - catch any requests that aren't caught by previous filters
 app.use((req, res, next) => {
-    const error = new Error('No route found');
-    error.status = 404;
-    next(error);
+  const error = new Error('No route found');
+  error.status = 404;
+  next(error);
 });
 
 // middleware - catch any errors that happen other places in the application (DB, etc.)
 app.use((error, req, res, next) => {
-    res.status(error.status || 500);
-    res.json({
-        error: { message: error.message }
-    });
+  res.status(error.status || 500);
+  res.json({
+    error: { message: error.message },
+  });
 });
 
 // start the cron service to cache users games in the background
 cron.cacheGames();
 
 app.listen(port, () => {
-    console.log(`Listening on ${port}`)
-})
+  console.log(`Listening on ${port}`);
+});

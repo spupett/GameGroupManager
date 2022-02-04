@@ -3,7 +3,9 @@ const jsConvert = require('xml-js');
 
 function getDataFromBGG(url) {
   return axios.get(url).then((response) => {
-    return JSON.parse(jsConvert.xml2json(response.data, { compact: true, spaces: 4 }));
+    return JSON.parse(
+      jsConvert.xml2json(response.data, { compact: true, spaces: 4 })
+    );
   });
 }
 
@@ -22,5 +24,5 @@ module.exports = {
   getUserGames: (userName) => {
     const URL = `https://www.boardgamegeek.com/xmlapi2/collection?own=1&username=${userName}`;
     return getDataFromBGG(URL);
-  }
-}
+  },
+};
