@@ -17,10 +17,10 @@ module.exports = {
       });
   },
 
-  find: (model, search) => {
+  find: (model, search, projection = null) => {
     mongoose.connect(mongoConnection, { useNewUrlParser: true });
     return model
-      .find(search)
+      .find(search, projection)
       .exec()
       .then((result) => {
         return result;

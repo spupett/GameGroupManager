@@ -2,7 +2,7 @@ const User = require('../../dal/schemas/User');
 const dal = require('../../dal/dal');
 const UserService = require('../../services/userServices/getUserInfoFromBgg');
 const UserGameServices = require('../../services/userServices/getUserGameInfoFromBGG');
-const session = require('express-session');
+const GameServices = require('../../services/gameServices/gameServices');
 
 module.exports = {
   createUser: async (UserData) => {
@@ -67,15 +67,13 @@ module.exports = {
     return userGames;
   },
   refreshGameList: async (user, sessionId) => {
-    // get games from bgg x
-    // update user.games x
-    // update
     // fire off get games from bgg
     const usersGames = await UserGameServices.getGameIdsFromBgg(
       user.BGGName.toLowerCase()
     );
     user.games = usersGames;
-    module.exports.updateUser(user, sessionId);
+    GameServices.saveGameDetails(user.games);
+    const games = module.exports.updateUser(user, sessionId);
     return user;
   },
 };

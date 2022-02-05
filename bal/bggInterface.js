@@ -1,4 +1,5 @@
 const axios = require('axios');
+const req = require('express/lib/request');
 const jsConvert = require('xml-js');
 
 function getDataFromBGG(url) {

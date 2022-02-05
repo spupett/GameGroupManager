@@ -40,6 +40,7 @@ async function getGamesToAdd(bggUser) {
   const newGames = usersGames.filter((id) => {
     return savedGames.indexOf(id) === -1;
   });
+
   return newGames;
 }
 
