@@ -35,6 +35,7 @@ router
     try {
       const user = await UserServices.createUser(req.body);
       req.session.userId = user._id.toString();
+      UserServices.refreshGameList(user, req.session.userId);
       res.status(200).send(displayUser.map(user));
     } catch (err) {
       console.log(err);
