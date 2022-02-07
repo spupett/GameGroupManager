@@ -11,7 +11,7 @@ router.get('/:bggId', (req, res, next) => {
 
 router.post('/', (req, res, next) => {
   gameController
-    .getGames(JSON.parse(req.body.gameList))
+    .getGames(req.body.gameList)
     .then((results) => {
       res.status(200).json(results);
     })
