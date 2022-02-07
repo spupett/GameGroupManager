@@ -1,6 +1,6 @@
 const axios = require('axios');
-const req = require('express/lib/request');
 const jsConvert = require('xml-js');
+const convert = require('../services').Convert;
 
 function getDataFromBGG(url) {
   return axios.get(url).then((response) => {
@@ -17,9 +17,9 @@ module.exports = {
     return getDataFromBGG(URL);
   },
 
-  getGames: (gameId) => {
+  getGames: async (gameId) => {
     const URL = `https://www.boardgamegeek.com/xmlapi2/thing?&id=${gameId}`;
-    return getDataFromBGG(URL);
+    return convert.convertGameDetail(await getDataFromBGG(URL));
   },
 
   getUserGames: (userName) => {

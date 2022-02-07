@@ -25,9 +25,9 @@ module.exports = {
     const newGames = gameIdList.filter((g) => !allGames.includes(g));
 
     if (newGames.length > 0) {
+      console.log('Adding new game details');
       const newGameDetails = await module.exports.getGameDetails(newGames);
-      const mappedDetails = convert.convertGameDetail(newGameDetails);
-      mappedDetails.forEach((game) => {
+      newGameDetails.forEach((game) => {
         dal.save(
           new Game({
             name: game.name,
@@ -43,6 +43,8 @@ module.exports = {
           })
         );
       });
+    } else {
+      console.log('No new game details to add');
     }
   },
 };

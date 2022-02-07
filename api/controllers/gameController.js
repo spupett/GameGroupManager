@@ -15,8 +15,8 @@ const getAllGames = async (gameIds) => {
   });
   if (newGameIds.length > 0) {
     const gamesFromWS = await getGamesFromWS(newGameIds);
-    if (gamesFromWS.items.item) {
-      newGames = Convert.convertGameDetail(gamesFromWS);
+    if (gamesFromWS) {
+      newGames = gamesFromWS;
       allGames = gamesFromDB.concat(newGames);
     } else {
       return null;
