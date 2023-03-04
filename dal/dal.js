@@ -10,6 +10,7 @@ module.exports = {
       .findOne({ BGGName: userName })
       .exec()
       .then((result) => {
+        console.log(result);
         return result;
       })
       .catch((error) => {
@@ -36,6 +37,20 @@ module.exports = {
       .findById(id)
       .exec()
       .then((result) => {
+        return result;
+      })
+      .catch((error) => {
+        throw error;
+      });
+  },
+
+  findByEmail: (model, email) => {
+    mongoose.connect(mongoConnection, { useNewUrlParser: true });
+    return model
+      .findOne({ email: email })
+      .exec()
+      .then((result) => {
+        result.games = result.games.map((g) => parseInt(g));
         return result;
       })
       .catch((error) => {

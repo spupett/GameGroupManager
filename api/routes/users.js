@@ -14,6 +14,10 @@ router
     const user = await UserService.getUserFromBgg(req.params.BGGName);
     res.status(200).send(user);
   })
+  .get('/email/:email', async (req, res, next) => {
+    const user = await UserServices.findUserByEmail(req.params.email);
+    res.status(200).send(user);
+  })
   .get('/:BGGName/games', async (req, res, next) => {
     const usersGames = await UserGameServices.getGameIdsFromBgg(
       req.params.BGGName.toLowerCase()
@@ -53,7 +57,9 @@ router
           return next(err);
         } else {
           req.session.userId = user._id.toString();
-          res.status(200).send(displayUser.map(user));
+          let retrievedUser = displayUser.map(user);
+          retrievedUser.token = user._id.toString();
+          res.status(200).send(retrievedUser);
         }
       }
     );

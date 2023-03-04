@@ -3,13 +3,15 @@ const app = express();
 const logger = require('morgan');
 const session = require('express-session');
 const cron = require('./cron/cacheUsersGames');
-
+const passport = require('passport');
 const userRoutes = require('./api/routes/users');
 const gameRoutes = require('./api/routes/games');
 const groupRoutes = require('./api/routes/groups');
+const authRoutes = require('./api/routes/auth');
+const cors = require('cors');
 
 // allow dynamic port by host
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3030;
 
 // middleware - log out incoming requests
 app.use(logger('dev'));
@@ -21,6 +23,19 @@ app.use(
     cookie: { secure: !true },
   })
 );
+
+app.use(cors());
+
+app.use(passport.initialize());
+app.use(passport.authenticate('session'));
+
+const isLoggedIn = (req, res, next) => {
+  if (req.user) {
+    next();
+  } else {
+    res.sendStatus(401);
+  }
+};
 
 // middleware - takes info passed in through the body
 app.use(express.urlencoded({ extended: false }));
@@ -35,10 +50,7 @@ app.use((req, res, next) => {
   );
   if (req.method === 'OPTIONS') {
     // If a request for options, send back 200 with headers, but don't move onto the next middleware.
-    res.header(
-      'Access-Control-Allow-Methods',
-      'PUT, POST, DELETE, GET'
-    );
+    res.header('Access-Control-Allow-Methods', 'PUT, POST, DELETE, GET');
     res.send(200);
   } else {
     next();
@@ -51,6 +63,8 @@ app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/games', gameRoutes);
 // middleware - filter all requests for groups to the groupRoutes
 app.use('/api/v1/groups', groupRoutes);
+// midleware - filter all requests for authentication
+app.use('/auth', authRoutes);
 
 // middleware - catch any requests that aren't caught by previous filters
 app.use((req, res, next) => {

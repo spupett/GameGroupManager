@@ -7,7 +7,7 @@ const getAllGames = async (gameIds) => {
   let allGames = [];
   const gamesFromDB = await getGamesFromDB(gameIds);
   const dbIds = gamesFromDB.map((game) => {
-    return game.bggId;
+    return parseInt(game.bggId);
   });
   const newGameIds = gameIds.filter((id) => {
     return dbIds.indexOf(id) === -1;
@@ -29,6 +29,7 @@ const getAllGames = async (gameIds) => {
 };
 
 const getGamesFromDB = (gameIds) => {
+  console.log(gameIds);
   return (foundGames = DAL.find(Game, { bggId: gameIds }));
 };
 

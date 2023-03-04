@@ -22,13 +22,10 @@ const userSchema = new Schema({
     required: true,
   },
   games: [],
+  googleId: String,
 });
 
-userSchema.statics.authenticate = function (
-  BGGName,
-  password,
-  callback
-) {
+userSchema.statics.authenticate = function (BGGName, password, callback) {
   User.findOne({ BGGName: BGGName }).exec(function (err, user) {
     if (err) {
       return callback(err);

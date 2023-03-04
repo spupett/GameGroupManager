@@ -50,10 +50,19 @@ module.exports = {
     const user = await dal.findOne(User, bggUser.toLowerCase());
     return user;
   },
+  findUserByEmail: async (email) => {
+    const user = await dal.findByEmail(User, email);
+    return user;
+  },
+  findByGoogleId: async (google_Id) => {
+    const user = await dal.find(User, { googleId: google_Id });
+    console.log('User', user);
+    return user;
+  },
   getUsersGames: async (users) => {
     const userData = await Promise.all(
       users.map((user) => {
-        return dal.findOne(User, user);
+        return dal.findOne(User, user.toLowerCase());
       })
     );
 

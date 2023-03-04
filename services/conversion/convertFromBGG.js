@@ -26,6 +26,8 @@ function findBestPlayerNumber(poll) {
 }
 
 module.exports = {
+  // don't return the email since it's not a public thing.  We'll use our authenticated user on
+  // the FE to supply email when we need to
   convertUser: (bggUserData) => {
     return {
       bggName: bggUserData.user._attributes.name,
